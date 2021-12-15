@@ -5,7 +5,7 @@ import debug from 'debug';
 
 const log = debug('docker-events');
 
-class DockerEventEmitter extends EventEmitter {
+export class DockerEventEmitter extends EventEmitter {
   #cmd: ChildProcessWithoutNullStreams;
   #watcher: FSWatcher;
   #data: string;
