@@ -10,11 +10,14 @@ class DockerEventEmitter extends EventEmitter {
   #watcher: FSWatcher;
   #data: string;
   #lastSeen: string;
-  constructor() {
+  #filters: string[];
+
+  constructor(filters: string[] = []) {
     super();
 
     this.#cmd = null;
     this.#data = '';
+    this.#filters = filters;
   }
 
   emit(type: string, ...args: any[]) {
@@ -65,8 +68,11 @@ class DockerEventEmitter extends EventEmitter {
 
     log('spawning docker events');
 
+    // Create filters string for events
+    const filters = this.#filters.map(filter => `--filter ${filter}`).join(' ');
+
     // Span child process to listen to events
-    this.#cmd = spawn('docker events --format \'{{json .}}\'', { shell: true });
+    this.#cmd = spawn(`docker events --format '{{json .}}' ${filters}`, { shell: true });
 
     // Kill child process on exit
     process.on('exit', () => {
